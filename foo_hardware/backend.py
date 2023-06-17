@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from foo_hardware import models
@@ -44,12 +44,11 @@ def read_users():
 @app.post("/hardware/", response_model=models.HardwareItemRead)
 def create_hardware_item(hardware_item: models.HardwareItemCreate):
     with Session(engine) as session:
-        print("XXXXXXXXXXX")
-        print(f"ZZ: {hardware_item.owner_id}")
         find_user = select(models.User).where(models.User.id == hardware_item.owner_id)
-        res = session.exec(find_user)
-        print(f"YYY: {res}")
-        print("XXXXXXXXXXX")
+        if session.exec(find_user).first() is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+            )
         db_hardware_item = models.HardwareItem.from_orm(hardware_item)
         session.exec
         session.add(db_hardware_item)
