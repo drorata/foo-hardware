@@ -8,6 +8,7 @@ from foo_hardware import constants
 class UserBase(SQLModel):
     username: str = Field(sa_column=Column("username", String, unique=True))
     password: str
+    email: str = Field(sa_column=Column("email", String, unique=True))
     items: List["HardwareItem"] = Relationship(back_populates="owner")
 
 
