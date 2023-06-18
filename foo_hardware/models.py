@@ -27,7 +27,10 @@ class HardwareItemBase(SQLModel):
     kind: constants.HARDWARE_KINDS = Field(
         default=...,
         title="Type of hardware",
-        description=f"Possible kinds are: {[(e.name, e.value) for e in constants.HARDWARE_KINDS]}",
+        description=(
+            "Possible kinds are:"
+            f" {[(e.name, e.value) for e in constants.HARDWARE_KINDS]}"
+        ),
     )
     owner_id: int = Field(foreign_key="user.id")
     owner: User = Relationship(back_populates="items")

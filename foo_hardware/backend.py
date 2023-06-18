@@ -62,3 +62,21 @@ def read_hardware_items():
     with Session(engine) as session:
         hardware_items = session.exec(select(models.HardwareItem)).all()
         return hardware_items
+
+
+@app.delete("/hardware", response_model=models.HardwareItemRead)
+def delete_hardware_item(hardware_item_id: int):
+    with Session(engine) as session:
+        user_to_delete = session.exec(
+            select(models.HardwareItem).where(
+                models.HardwareItem.id == hardware_item_id
+            )
+        ).first()
+        if user_to_delete is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"No hardware item with ID: {hardware_item_id} found",
+            )
+        session.delete(user_to_delete)
+        session.commit()
+        return user_to_delete
