@@ -1,0 +1,14 @@
+version: "3"
+
+tasks:
+  dev_run:
+    dir: ./foo_hardware
+    cmds:
+      - poetry run uvicorn backend:app --reload
+    silent: true
+
+  validate_lint:
+    cmds:
+      - poetry run black --check --preview .
+      - poetry run flake8 .
+      - poetry run isort --df .
