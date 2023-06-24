@@ -41,20 +41,42 @@ def read_users():
         return users
 
 
+def get_user_from_id(session: Session, user_id: int) -> models.UserRead:
+    owner = session.exec(
+        select(models.User).where(models.User.id == user_id)
+    ).fetchall()
+    if len(owner) != 1:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=(
+                f"Found {len(owner)} owners with the given id"
+                f" '{user_id}'; expected only one"
+            ),
+        )
+    return owner
+
+
+def get_hardware_item_from_id(
+    session: Session, hardware_item_id: int
+) -> models.HardwareItem:
+    item = session.exec(
+        select(models.HardwareItem).where(models.HardwareItem.id == hardware_item_id)
+    ).fetchall()
+    if len(item) != 1:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=(
+                f"Found {len(item)} items with the given id"
+                f" '{hardware_item_id}'; expected only one"
+            ),
+        )
+    return item[0]
+
+
 @app.post("/hardware/", response_model=models.HardwareItemRead)
 def create_hardware_item(hardware_item: models.HardwareItemCreate):
     with Session(engine) as session:
-        owner = session.exec(
-            select(models.User).where(models.User.id == hardware_item.owner_id)
-        ).fetchall()
-        if len(owner) != 1:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=(
-                    f"Found {len(owner)} owners with the given id"
-                    f" '{hardware_item.owner_id}'; expected only one"
-                ),
-            )
+        get_user_from_id(session, hardware_item.owner_id)
         db_hardware_item = models.HardwareItem.from_orm(hardware_item)
         session.exec
         session.add(db_hardware_item)
@@ -73,16 +95,7 @@ def read_hardware_items():
 @app.delete("/hardware", response_model=models.HardwareItemRead)
 def delete_hardware_item(hardware_item_id: int):
     with Session(engine) as session:
-        user_to_delete = session.exec(
-            select(models.HardwareItem).where(
-                models.HardwareItem.id == hardware_item_id
-            )
-        ).first()
-        if user_to_delete is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"No hardware item with ID: {hardware_item_id} found",
-            )
-        session.delete(user_to_delete)
+        hardware_item_to_delete = get_hardware_item_from_id(session, hardware_item_id)
+        session.delete(hardware_item_to_delete)
         session.commit()
-        return user_to_delete
+        return hardware_item_to_delete
