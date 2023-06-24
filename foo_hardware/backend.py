@@ -3,7 +3,7 @@ from typing import List
 from fastapi import FastAPI, HTTPException, status
 from sqlmodel import Session, SQLModel, create_engine, select
 
-from foo_hardware import models
+from foo_hardware import models, constants
 
 sqlite_file_name = "../data/foo_hardware.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
@@ -99,3 +99,29 @@ def delete_hardware_item(hardware_item_id: int):
         session.delete(hardware_item_to_delete)
         session.commit()
         return hardware_item_to_delete
+
+
+@app.put("/hardware", response_model=models.HardwareItemRead)
+def update_hardware_item(
+    hardware_item_id: int,
+    owner_id: int = None,
+    kind: constants.HARDWARE_KINDS = None,
+    comment: str = None,
+):
+    with Session(engine) as session:
+        hardware_item_to_update = get_hardware_item_from_id(session, hardware_item_id)
+        print(hardware_item_to_update)
+
+        if owner_id is not None:
+            get_user_from_id(session, owner_id)
+            hardware_item_to_update.owner_id = owner_id
+        if kind is not None:
+            hardware_item_to_update.kind = kind
+        if comment is not None:
+            hardware_item_to_update.comment = comment
+
+        session.add(hardware_item_to_update)
+        session.commit()
+        session.refresh(hardware_item_to_update)
+
+        return hardware_item_to_update
