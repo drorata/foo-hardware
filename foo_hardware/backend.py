@@ -44,10 +44,16 @@ def read_users():
 @app.post("/hardware/", response_model=models.HardwareItemRead)
 def create_hardware_item(hardware_item: models.HardwareItemCreate):
     with Session(engine) as session:
-        find_user = select(models.User).where(models.User.id == hardware_item.owner_id)
-        if session.exec(find_user).first() is None:
+        owner = session.exec(
+            select(models.User).where(models.User.id == hardware_item.owner_id)
+        ).fetchall()
+        if len(owner) != 1:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Owner not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=(
+                    f"Found {len(owner)} owners with the given id"
+                    f" '{hardware_item.owner_id}'; expected only one"
+                ),
             )
         db_hardware_item = models.HardwareItem.from_orm(hardware_item)
         session.exec
