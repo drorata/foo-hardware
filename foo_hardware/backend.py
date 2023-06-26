@@ -29,6 +29,11 @@ def on_startup():
     create_db_and_tables()
 
 
+@app.get("/")
+def nothing_to_see_here():
+    return "There's nothing to see here"
+
+
 @app.post("/user/", response_model=models.UserRead)
 def create_user(*, session: Session = Depends(get_session), user: models.UserCreate):
     db_user = models.User.from_orm(user)
