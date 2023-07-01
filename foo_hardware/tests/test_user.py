@@ -1,10 +1,5 @@
 from fastapi.testclient import TestClient
 from foo_hardware.backend import app
-from foo_hardware.tests.fixtures import (  # noqa: F401
-    session_fixture,
-    client_fixture,
-    bootstrap_data_fixture,
-)
 
 
 def test_root_of_app():
