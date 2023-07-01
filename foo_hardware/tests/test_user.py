@@ -29,6 +29,22 @@ def client_fixture(session: Session):
     app.dependency_overrides.clear()
 
 
+@pytest.fixture(name="bootstrap_data")
+def bootstrap_data_fixture(client: TestClient, session: Session):
+    session.add(
+        models.User(
+            username="Peter Pen", password="pass123", email="peter@neverland.io"
+        )
+    )
+    session.add(
+        models.User(
+            username="Captain Hook", password="pass456", email="hook@neverland.io"
+        )
+    )
+    session.commit()
+    yield {"client": client, "session": session}
+
+
 def test_root_of_app():
     client = TestClient(app)
     response = client.get("/")
@@ -44,17 +60,13 @@ def test_get_empty_users(client: TestClient):
     assert response.status_code == 422
 
 
-def test_add_and_get_users(session: Session, client: TestClient):
-    user1 = models.User(
-        username="Peter Pen", password="pass123", email="peter@neverland.io"
-    )
-    session.add(user1)
-    session.commit()
+def test_add_and_get_users2(bootstrap_data):
+    client = bootstrap_data["client"]
 
     response = client.get("/user")
     print(response.json())
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()) == 2
     p_pen = response.json()[0]
     assert p_pen["username"] == "Peter Pen"
     assert p_pen["password"] == "pass123"
