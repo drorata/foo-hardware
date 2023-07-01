@@ -52,5 +52,9 @@ def test_add_and_get_users(session: Session, client: TestClient):
     session.commit()
 
     response = client.get("/user")
-    # data = response.json()
+    print(response.json())
     assert response.status_code == 200
+    assert len(response.json()) == 1
+    p_pen = response.json()[0]
+    assert p_pen["username"] == "Peter Pen"
+    assert p_pen["password"] == "pass123"
