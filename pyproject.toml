@@ -20,6 +20,7 @@ flake8 = "^6.0.0"
 isort = "^5.12.0"
 pytest = "^7.4.0"
 httpx = "^0.24.1"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -27,3 +28,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
 profile = "black"
+
+[tool.coverage.run]
+omit = ["./foo_hardware/tests/*"]

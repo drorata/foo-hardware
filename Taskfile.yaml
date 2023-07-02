@@ -12,3 +12,11 @@ tasks:
       - poetry run black --check --preview .
       - poetry run flake8 .
       - poetry run isort --df .
+
+  test_with_coverage:
+    cmds:
+      - poetry run pytest --cov-report term-missing --cov-fail-under=98 --cov=foo_hardware foo_hardware/tests
+
+  test:
+    cmds:
+      - poetry run pytest .
