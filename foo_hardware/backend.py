@@ -12,11 +12,11 @@ connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
 
 
-def create_db_and_tables():
+def create_db_and_tables():  # pragma: no cover
     SQLModel.metadata.create_all(engine)
 
 
-def get_session():
+def get_session():  # pragma: no cover
     with Session(engine) as session:
         yield session
 
@@ -25,7 +25,7 @@ app = FastAPI()
 
 
 @app.on_event("startup")
-def on_startup():
+def on_startup():  # pragma: no cover
     create_db_and_tables()
 
 
@@ -64,7 +64,7 @@ def get_user_from_id(session: Session, user_id: int) -> models.UserRead:
                 f" '{user_id}'; expected only one"
             ),
         )
-    return owner
+    return owner[0]
 
 
 def get_hardware_item_from_id(
@@ -126,7 +126,6 @@ def update_hardware_item(
     comment: str = None,
 ):
     hardware_item_to_update = get_hardware_item_from_id(session, hardware_item_id)
-    print(hardware_item_to_update)
 
     if owner_id is not None:
         get_user_from_id(session, owner_id)
