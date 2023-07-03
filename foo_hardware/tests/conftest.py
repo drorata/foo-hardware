@@ -41,5 +41,8 @@ def bootstrap_data_fixture(client: TestClient, session: Session):
             username="Captain Hook", password="pass456", email="hook@neverland.io"
         )
     )
+    session.add(models.HardwareItem(kind=1, comment="some comment", owner_id=1))
+    session.add(models.HardwareItem(kind=2, comment="some comment2", owner_id=1))
+    session.add(models.HardwareItem(kind=1, comment="some comment3", owner_id=1))
     session.commit()
     yield {"client": client, "session": session}

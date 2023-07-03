@@ -1,11 +1,33 @@
 from fastapi.testclient import TestClient
-from foo_hardware.backend import app
+
+from foo_hardware.backend import app, get_user_from_id
 
 
 def test_root_of_app():
     client = TestClient(app)
     response = client.get("/")
     assert response.status_code == 200
+
+
+def test_add_user(bootstrap_data):
+    client: TestClient = bootstrap_data["client"]
+
+    url = "/user/"
+    headers = {"Content-Type": "application/json"}
+    data = {
+        "username": "great guy",
+        "password": "here_is_a_password",
+        "email": "some@email.com",
+    }
+    response = client.post(url, headers=headers, json=data)
+    assert response.status_code == 200
+    assert response.json()["username"] == "great guy"
+
+
+def test_get_user_by_id(bootstrap_data):
+    session = bootstrap_data["session"]
+    user = get_user_from_id(session=session, user_id=1)
+    assert user.username == "Peter Pen"
 
 
 def test_get_empty_users(client: TestClient):
