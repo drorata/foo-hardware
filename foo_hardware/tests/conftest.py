@@ -5,6 +5,7 @@ from sqlmodel.pool import StaticPool
 
 from foo_hardware import models
 from foo_hardware.backend import app, get_session
+from foo_hardware.utils_test import SessionClient
 
 
 @pytest.fixture(name="session")
@@ -45,4 +46,4 @@ def bootstrap_data_fixture(client: TestClient, session: Session):
     session.add(models.HardwareItem(kind=2, comment="some comment2", owner_id=1))
     session.add(models.HardwareItem(kind=1, comment="some comment3", owner_id=1))
     session.commit()
-    yield {"client": client, "session": session}
+    yield SessionClient(session=session, client=client)

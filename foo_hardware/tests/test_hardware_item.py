@@ -1,27 +1,27 @@
 import pytest
 from fastapi import HTTPException
-from fastapi.testclient import TestClient
-from sqlmodel import Session, select
+from sqlmodel import select
 
 from foo_hardware import models
 from foo_hardware.backend import get_hardware_item_from_id
+from foo_hardware.utils_test import SessionClient
 
 
-def test_get_item_from_id(bootstrap_data):
-    session = bootstrap_data["session"]
+def test_get_item_from_id(bootstrap_data: SessionClient):
+    session = bootstrap_data.session
     item = get_hardware_item_from_id(session=session, hardware_item_id=1)
     assert item.kind == 1
     assert item.comment == "some comment"
 
 
-def test_get_item_from_wrong_id(bootstrap_data):
-    session = bootstrap_data["session"]
+def test_get_item_from_wrong_id(bootstrap_data: SessionClient):
+    session = bootstrap_data.session
     with pytest.raises(HTTPException):
         get_hardware_item_from_id(session=session, hardware_item_id=123)
 
 
-def test_add_hardware_with_invalid_user(bootstrap_data):
-    client: TestClient = bootstrap_data["client"]
+def test_add_hardware_with_invalid_user(bootstrap_data: SessionClient):
+    client = bootstrap_data.client
 
     url = "/hardware/"
     headers = {"Content-Type": "application/json"}
@@ -30,8 +30,8 @@ def test_add_hardware_with_invalid_user(bootstrap_data):
     assert response.status_code == 404
 
 
-def test_create_hardware_item(bootstrap_data):
-    client: TestClient = bootstrap_data["client"]
+def test_create_hardware_item(bootstrap_data: SessionClient):
+    client = bootstrap_data.client
     hardware_item_data = {"owner_id": 1, "kind": 1, "comment": "great stuff"}
     headers = {"Content-Type": "application/json"}
 
@@ -42,8 +42,8 @@ def test_create_hardware_item(bootstrap_data):
     assert response_data["comment"] == "great stuff"
 
 
-def test_get_hardware_items(bootstrap_data):
-    client: TestClient = bootstrap_data["client"]
+def test_get_hardware_items(bootstrap_data: SessionClient):
+    client = bootstrap_data.client
 
     response = client.get("/hardware/")
     assert response.status_code == 200
@@ -51,8 +51,8 @@ def test_get_hardware_items(bootstrap_data):
     assert len(response_data) == 3
 
 
-def test_delet_hardware_item(bootstrap_data):
-    client: TestClient = bootstrap_data["client"]
+def test_delet_hardware_item(bootstrap_data: SessionClient):
+    client = bootstrap_data.client
     response = client.delete("/hardware?hardware_item_id=1")
     assert response.status_code == 200
 
@@ -62,9 +62,9 @@ def test_delet_hardware_item(bootstrap_data):
     assert len(response_data) == 2
 
 
-def test_update_item_owner(bootstrap_data):
-    client: TestClient = bootstrap_data["client"]
-    session: Session = bootstrap_data["session"]
+def test_update_item_owner(bootstrap_data: SessionClient):
+    client = bootstrap_data.client
+    session = bootstrap_data.session
 
     hardware_item_id = 1
 
@@ -83,9 +83,9 @@ def test_update_item_owner(bootstrap_data):
     assert hardware_item.owner_id == 2
 
 
-def test_update_item_kind(bootstrap_data):
-    client: TestClient = bootstrap_data["client"]
-    session: Session = bootstrap_data["session"]
+def test_update_item_kind(bootstrap_data: SessionClient):
+    client = bootstrap_data.client
+    session = bootstrap_data.session
 
     hardware_item_id = 1
 
@@ -104,9 +104,9 @@ def test_update_item_kind(bootstrap_data):
     assert hardware_item.kind == 2
 
 
-def test_update_item_comment(bootstrap_data):
-    client: TestClient = bootstrap_data["client"]
-    session: Session = bootstrap_data["session"]
+def test_update_item_comment(bootstrap_data: SessionClient):
+    client = bootstrap_data.client
+    session = bootstrap_data.session
 
     hardware_item_id = 1
 
