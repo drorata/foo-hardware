@@ -23,7 +23,7 @@ def test_get_item_from_wrong_id(bootstrap_data: SessionClient):
 def test_add_hardware_with_invalid_user(bootstrap_data: SessionClient):
     client = bootstrap_data.client
 
-    url = "/hardware/"
+    url = "/hardware"
     headers = {"Content-Type": "application/json"}
     data = {"owner_id": "1111", "kind": "1"}
     response = client.post(url, headers=headers, json=data)
@@ -35,7 +35,7 @@ def test_create_hardware_item(bootstrap_data: SessionClient):
     hardware_item_data = {"owner_id": 1, "kind": 1, "comment": "great stuff"}
     headers = {"Content-Type": "application/json"}
 
-    response = client.post("/hardware/", headers=headers, json=hardware_item_data)
+    response = client.post("/hardware", headers=headers, json=hardware_item_data)
     assert response.status_code == 200
     response_data = response.json()
     assert "id" in response_data
@@ -45,7 +45,7 @@ def test_create_hardware_item(bootstrap_data: SessionClient):
 def test_get_hardware_items(bootstrap_data: SessionClient):
     client = bootstrap_data.client
 
-    response = client.get("/hardware/")
+    response = client.get("/hardware")
     assert response.status_code == 200
     response_data = response.json()
     assert len(response_data) == 3
@@ -56,7 +56,7 @@ def test_delet_hardware_item(bootstrap_data: SessionClient):
     response = client.delete("/hardware?hardware_item_id=1")
     assert response.status_code == 200
 
-    response = client.get("/hardware/")
+    response = client.get("/hardware")
     assert response.status_code == 200
     response_data = response.json()
     assert len(response_data) == 2

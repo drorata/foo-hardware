@@ -13,7 +13,7 @@ def test_root_of_app():
 def test_add_user(bootstrap_data: SessionClient):
     client = bootstrap_data.client
 
-    url = "/user/"
+    url = "/user"
     headers = {"Content-Type": "application/json"}
     data = {
         "username": "great guy",
@@ -32,14 +32,13 @@ def test_get_user_by_id(bootstrap_data: SessionClient):
 
 
 def test_get_empty_users(client: TestClient):
-    response = client.post("/user/", json={})
+    response = client.post("/user", json={})
     app.dependency_overrides.clear()
     assert response.status_code == 422
 
 
 def test_add_and_get_users2(bootstrap_data: SessionClient):
     client = bootstrap_data.client
-
     response = client.get("/user")
     print(response.json())
     assert response.status_code == 200

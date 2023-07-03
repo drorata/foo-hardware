@@ -34,7 +34,7 @@ def nothing_to_see_here():
     return "There's nothing to see here"
 
 
-@app.post("/user/", response_model=models.UserRead)
+@app.post("/user", response_model=models.UserRead)
 def create_user(*, session: Session = Depends(get_session), user: models.UserCreate):
     db_user = models.User.from_orm(user)
     session.add(db_user)
@@ -43,7 +43,7 @@ def create_user(*, session: Session = Depends(get_session), user: models.UserCre
     return db_user
 
 
-@app.get("/user/", response_model=List[models.UserRead])
+@app.get("/user", response_model=List[models.UserRead])
 def read_users(
     *,
     session: Session = Depends(get_session),
@@ -84,7 +84,7 @@ def get_hardware_item_from_id(
     return item[0]
 
 
-@app.post("/hardware/", response_model=models.HardwareItemRead)
+@app.post("/hardware", response_model=models.HardwareItemRead)
 def create_hardware_item(
     *, session: Session = Depends(get_session), hardware_item: models.HardwareItemCreate
 ):
@@ -97,7 +97,7 @@ def create_hardware_item(
     return db_hardware_item
 
 
-@app.get("/hardware/", response_model=List[models.HardwareItemRead])
+@app.get("/hardware", response_model=List[models.HardwareItemRead])
 def read_hardware_items(
     *,
     session: Session = Depends(get_session),
